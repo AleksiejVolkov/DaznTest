@@ -9,8 +9,12 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -19,12 +23,14 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF000000),
+    primary = Color(0xFF171717),
     secondary = PurpleGrey40,
     tertiary = Pink40,
-    onSurface = Color(0xFF1C1B1F),
-    primaryContainer = Color(0xFFE5E5E5),
-    surface = Color(0xFFE5E5E5),
+    onPrimary = Color(0xFFEAEAEA),
+    onSurface = Color(0xFF323232),
+    background = Color(0xFFDEDEDE),
+    primaryContainer = Color(0xFF1A1A1A),
+    surface = Color(0xFFE0E0E0),
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -46,6 +52,15 @@ fun DaznTestAppTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
+   /* val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = Color.Transparent.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
+    }*/
 
     MaterialTheme(
         colorScheme = colorScheme,

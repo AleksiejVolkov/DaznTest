@@ -69,4 +69,8 @@ dependencies {
     implementation(libs.koin.android)
     runtimeOnly(libs.koin.androidx.compose)
 
+    //Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
 }
