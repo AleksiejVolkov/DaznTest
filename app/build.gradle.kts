@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 android {
@@ -58,4 +59,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.ui)
+    implementation(libs.androidx.material)
+    implementation(libs.kotlinx.serialization.json)
+
+    //Koin
+    implementation(libs.koin.androidx.compose.navigation)
+    implementation(libs.koin.android)
+    runtimeOnly(libs.koin.androidx.compose)
+
 }
