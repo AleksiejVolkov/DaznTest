@@ -1,0 +1,13 @@
+<resources>
+    <style name="Theme.DaznTestApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.DaznTestApp.Starting" parent="Theme.SplashScreen">
+        <!-- Set the splash screen background to black -->
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated
+             drawable. -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <!-- Set the theme of the Activity that follows your splash screen. -->
+        <item name="postSplashScreenTheme">@style/Theme.DaznTestApp</item>
+    </style>
+</resources>
