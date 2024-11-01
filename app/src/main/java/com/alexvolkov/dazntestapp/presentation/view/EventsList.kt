@@ -45,17 +45,14 @@ fun EventsList(
 
     Box {
         LazyColumn(
-            modifier = modifier.padding(horizontal = 8.dp),
-            state = listState
+            modifier = modifier.padding(horizontal = 8.dp), state = listState
         ) {
             item {
                 Spacer(modifier = Modifier.height(innerPaddings.calculateTopPadding()))
             }
-            items(
-                count = events.itemCount,
+            items(count = events.itemCount,
                 key = events.itemKey { it.id },
-                contentType = events.itemContentType { "contentType" }
-            ) { index ->
+                contentType = events.itemContentType { "contentType" }) { index ->
                 events[index]?.let {
                     EventCard(it) { videoUrl ->
                         onOpenVideo(videoUrl)
@@ -85,8 +82,7 @@ fun EventsList(
 
 @Composable
 fun EventCard(
-    event: EventItem,
-    onOpenVideo: (String) -> Unit = {}
+    event: EventItem, onOpenVideo: (String) -> Unit = {}
 ) {
     Card(
         modifier = Modifier
@@ -140,7 +136,7 @@ fun EventCard(
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                if (event.playable) {
+                if (event.imageUrl.isNotEmpty()) {
                     OutlinedButton(
                         onClick = { onOpenVideo(event.videoUrl) },
                         shape = MaterialTheme.shapes.large

@@ -2,7 +2,7 @@ package com.alexvolkov.dazntestapp.data.repository
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.alexvolkov.dazntestapp.domain.Event
+import com.alexvolkov.dazntestapp.data.entity.Event
 
 class PagingSource(private val allEvents: List<Event>) : PagingSource<Int, Event>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Event> {

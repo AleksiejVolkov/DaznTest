@@ -8,6 +8,4 @@ data class EventItem(
     val description: String,
     val date: Date,
     val imageUrl: String,
-    val videoUrl: String = "",
-    val playable: Boolean = false
-)
+    val videoUrl: String = "")

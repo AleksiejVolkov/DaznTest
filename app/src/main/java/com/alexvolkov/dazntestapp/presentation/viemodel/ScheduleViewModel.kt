@@ -31,8 +31,7 @@ class ScheduleViewModel(
                         title = event.title,
                         date = event.date,
                         imageUrl = event.imageUrl,
-                        description = event.subtitle,
-                        playable = false
+                        description = event.subtitle
                     )
                 }
             }

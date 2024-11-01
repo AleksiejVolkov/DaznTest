@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
-import java.util.UUID
 
 class EventsViewModel(
     private val fetchEventsUseCase: FetchEventsUseCase
@@ -35,8 +34,7 @@ class EventsViewModel(
                         date = event.date,
                         imageUrl = event.imageUrl,
                         videoUrl = event.videoUrl,
-                        description = event.subtitle,
-                        playable = true
+                        description = event.subtitle
                     )
                 }
             }

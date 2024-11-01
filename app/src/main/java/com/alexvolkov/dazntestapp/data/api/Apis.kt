@@ -1,6 +1,6 @@
 package com.alexvolkov.dazntestapp.data.api
 
-import com.alexvolkov.dazntestapp.domain.Event
+import com.alexvolkov.dazntestapp.data.entity.Event
 import retrofit2.http.GET
 
 interface EventsApi {

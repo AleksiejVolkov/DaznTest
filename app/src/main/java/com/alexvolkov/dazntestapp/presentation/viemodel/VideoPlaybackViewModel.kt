@@ -10,7 +10,6 @@ class VideoPlaybackViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        // Release the ExoPlayer when the ViewModel is cleared
         exoPlayer?.release()
         exoPlayer = null
     }

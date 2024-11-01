@@ -1,5 +1,6 @@
 package com.alexvolkov.dazntestapp.di
 
+import com.alexvolkov.dazntestapp.data.api.RetrofitInstance
 import com.alexvolkov.dazntestapp.data.repository.EventsRepository
 import com.alexvolkov.dazntestapp.data.repository.ScheduleRepository
 import com.alexvolkov.dazntestapp.domain.FetchEventsUseCase
@@ -15,8 +16,8 @@ val appModules = module {
     viewModelOf(::ScheduleViewModel)
     viewModelOf(::VideoPlaybackViewModel)
 
-    single { EventsRepository() }
-    single { ScheduleRepository() }
+    single { EventsRepository(RetrofitInstance.eventsApi) }
+    single { ScheduleRepository(RetrofitInstance.scheduleApi) }
 }
 
 val useCasesModule = module {
