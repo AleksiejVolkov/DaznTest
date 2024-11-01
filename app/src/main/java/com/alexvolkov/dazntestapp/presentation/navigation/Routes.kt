@@ -12,4 +12,4 @@ data object EventsScreen : Route()
 data object ScheduleScreen : Route()
 
 @Serializable
-data object VideoScreen : Route()
+data class VideoScreen(val videoUrl: String) : Route()

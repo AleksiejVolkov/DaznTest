@@ -34,7 +34,8 @@ import com.alexvolkov.dazntestapp.util.Utils.formatDate
 fun EventsList(
     modifier: Modifier = Modifier,
     innerPaddings: PaddingValues,
-    eventsViewModel: EventsViewModel
+    eventsViewModel: EventsViewModel,
+    onOpenVideo: (String) -> Unit
 ) {
     val events = eventsViewModel.eventsFlow.collectAsLazyPagingItems()
 
@@ -56,7 +57,9 @@ fun EventsList(
                 contentType = events.itemContentType { "contentType" }
             ) { index ->
                 events[index]?.let {
-                    EventCard(it)
+                    EventCard(it) { videoUrl ->
+                        onOpenVideo(videoUrl)
+                    }
                     Spacer(modifier = Modifier.height(12.dp))
                 }
             }
@@ -81,7 +84,10 @@ fun EventsList(
 }
 
 @Composable
-fun EventCard(event: EventItem) {
+fun EventCard(
+    event: EventItem,
+    onOpenVideo: (String) -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -136,7 +142,7 @@ fun EventCard(event: EventItem) {
                 Spacer(modifier = Modifier.weight(1f))
                 if (event.playable) {
                     OutlinedButton(
-                        onClick = { /*TODO*/ },
+                        onClick = { onOpenVideo(event.videoUrl) },
                         shape = MaterialTheme.shapes.large
                     ) {
                         Text(text = "Watch")

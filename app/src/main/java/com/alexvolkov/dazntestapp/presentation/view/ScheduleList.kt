@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -19,6 +20,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.alexvolkov.dazntestapp.presentation.viemodel.ScheduleViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun ScheduleList(
@@ -30,6 +32,13 @@ fun ScheduleList(
 
     val listState = rememberSaveable(scheduleViewModel, saver = LazyListState.Saver) {
         LazyListState()
+    }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(30_000)
+            events.refresh()
+        }
     }
 
     Box {
