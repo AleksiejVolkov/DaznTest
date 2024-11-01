@@ -1,5 +1,6 @@
 package com.alexvolkov.dazntestapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,6 +41,7 @@ import com.alexvolkov.dazntestapp.presentation.view.BottomNavigationBar
 import com.alexvolkov.dazntestapp.presentation.view.EventsList
 import com.alexvolkov.dazntestapp.presentation.view.ScheduleList
 import com.alexvolkov.dazntestapp.presentation.view.VideoPlayer
+import com.alexvolkov.dazntestapp.service.MediaPlayerService
 import com.alexvolkov.dazntestapp.ui.theme.DaznTestAppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -97,16 +99,29 @@ class MainActivity : ComponentActivity() {
                             composable<VideoScreen> { backStackEntry ->
                                 val video: VideoScreen = backStackEntry.toRoute()
                                 Box(
-                                    modifier = Modifier.fillMaxSize().background(Color.Black),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Black),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    VideoPlayer(videoUrl = video.videoUrl, navController = navController)
+                                    VideoPlayer(
+                                        videoUrl = video.videoUrl,
+                                        navController = navController
+                                    ) {
+                                        startAndBindService()
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun startAndBindService() {
+        Intent(this, MediaPlayerService::class.java).also { intent ->
+            startForegroundService(intent)
         }
     }
 }
