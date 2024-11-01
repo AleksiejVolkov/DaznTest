@@ -22,9 +22,11 @@ import androidx.navigation.compose.rememberNavController
 import com.alexvolkov.dazntestapp.presentation.navigation.EventsScreen
 import com.alexvolkov.dazntestapp.presentation.navigation.ScheduleScreen
 import com.alexvolkov.dazntestapp.presentation.navigation.VideoScreen
+import com.alexvolkov.dazntestapp.presentation.viemodel.EventsViewModel
 import com.alexvolkov.dazntestapp.presentation.view.BottomNavigationBar
 import com.alexvolkov.dazntestapp.presentation.view.EventsList
 import com.alexvolkov.dazntestapp.ui.theme.DaznTestAppTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,9 +39,13 @@ class MainActivity : ComponentActivity() {
             DaznTestAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding()) {
+                        val eventsListEventsViewModel = koinViewModel<EventsViewModel>()
                         NavHost(navController = navController, startDestination = EventsScreen) {
                             composable<EventsScreen> {
-                                EventsList(innerPaddings = innerPadding)
+                                EventsList(
+                                    innerPaddings = innerPadding,
+                                    eventsViewModel = eventsListEventsViewModel
+                                )
                             }
                             composable<ScheduleScreen> {
                                 Text("Schedule")
