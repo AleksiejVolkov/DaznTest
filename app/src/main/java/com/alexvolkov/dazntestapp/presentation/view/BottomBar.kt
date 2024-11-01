@@ -23,9 +23,11 @@ fun BottomNavigationBar(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    BottomNavigation(modifier = modifier,
+    BottomNavigation(
+        modifier = modifier,
         backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimary) {
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
@@ -33,10 +35,13 @@ fun BottomNavigationBar(
             BottomNavigationItem(
                 selected = currentDestination?.route == item.route::class.qualifiedName,
                 onClick = {
-                    if(currentDestination?.route != item.route::class.qualifiedName) {
+                    if (currentDestination?.route != item.route::class.qualifiedName) {
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId)
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
                             launchSingleTop = true
+                            restoreState = true
                         }
                     }
                 },

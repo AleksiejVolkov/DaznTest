@@ -5,8 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,8 +21,10 @@ import com.alexvolkov.dazntestapp.presentation.navigation.EventsScreen
 import com.alexvolkov.dazntestapp.presentation.navigation.ScheduleScreen
 import com.alexvolkov.dazntestapp.presentation.navigation.VideoScreen
 import com.alexvolkov.dazntestapp.presentation.viemodel.EventsViewModel
+import com.alexvolkov.dazntestapp.presentation.viemodel.ScheduleViewModel
 import com.alexvolkov.dazntestapp.presentation.view.BottomNavigationBar
 import com.alexvolkov.dazntestapp.presentation.view.EventsList
+import com.alexvolkov.dazntestapp.presentation.view.ScheduleList
 import com.alexvolkov.dazntestapp.ui.theme.DaznTestAppTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -37,9 +37,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             DaznTestAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        BottomNavigationBar(
+                            navController = navController,
+                            modifier = Modifier.height(80.dp)
+                        )
+                    }) { innerPadding ->
                     Box(modifier = Modifier.padding()) {
                         val eventsListEventsViewModel = koinViewModel<EventsViewModel>()
+                        val scheduleViewModel = koinViewModel<ScheduleViewModel>()
                         NavHost(navController = navController, startDestination = EventsScreen) {
                             composable<EventsScreen> {
                                 EventsList(
@@ -48,22 +55,15 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable<ScheduleScreen> {
-                                Text("Schedule")
+                                ScheduleList(
+                                    innerPaddings = innerPadding,
+                                    scheduleViewModel = scheduleViewModel
+                                )
                             }
                             composable<VideoScreen> {
                                 Text("Video")
                             }
                         }
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            BottomNavigationBar(
-                                modifier = Modifier.height(80.dp),
-                                navController = navController
-                            )
-                        }
-
                     }
                 }
             }

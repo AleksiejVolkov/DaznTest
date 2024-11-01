@@ -7,3 +7,8 @@ interface EventsApi {
     @GET("getEvents")
     suspend fun getAllEvents(): List<Event>
 }
+
+interface ScheduleApi {
+    @GET("getSchedule")
+    suspend fun getSchedule(): List<Event>
+}
