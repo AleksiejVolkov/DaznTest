@@ -2,11 +2,10 @@ package com.alexvolkov.dazntestapp.presentation.viemodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alexvolkov.dazntestapp.domain.Event
 import com.alexvolkov.dazntestapp.domain.FetchEventsUseCase
+import com.alexvolkov.dazntestapp.presentation.data.EventItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -20,7 +19,19 @@ class EventsViewModel(
     init {
         viewModelScope.launch {
             fetchEventsUseCase.fetchEvents().collectLatest {
-                _state.apply { value = value.copy(events = it) }
+                _state.apply {
+                    value = value.copy(events = it.sortedBy { it.date }.map {
+                        EventItem(
+                            id = it.id,
+                            title = it.title,
+                            date = it.date,
+                            imageUrl = it.imageUrl,
+                            videoUrl = it.videoUrl,
+                            description = it.subtitle,
+                            playable = true
+                        )
+                    })
+                }
             }
         }
     }
@@ -28,5 +39,5 @@ class EventsViewModel(
 
 data class EventsViewState(
     val isLoading: Boolean = false,
-    val events: List<Event> = emptyList()
+    val events: List<EventItem> = emptyList()
 )

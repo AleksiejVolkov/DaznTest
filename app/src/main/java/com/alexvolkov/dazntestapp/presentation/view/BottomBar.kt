@@ -33,14 +33,16 @@ fun BottomNavigationBar(
             BottomNavigationItem(
                 selected = currentDestination?.route == item.route::class.qualifiedName,
                 onClick = {
-                    navController.navigate(item.route) {
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
+                    if(currentDestination?.route != item.route::class.qualifiedName) {
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.startDestinationId)
+                            launchSingleTop = true
+                        }
                     }
                 },
                 icon = {
                     Icon(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 25.dp),
                         painter = painterResource(id = item.iconRes),
                         contentDescription = null
                     )

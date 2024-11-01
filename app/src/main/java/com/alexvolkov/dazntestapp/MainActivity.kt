@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                             contentAlignment = Alignment.BottomCenter
                         ) {
                             BottomNavigationBar(
-                                modifier = Modifier.height(70.dp),
+                                modifier = Modifier.height(80.dp),
                                 navController = navController
                             )
                         }
