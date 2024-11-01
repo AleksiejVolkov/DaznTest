@@ -20,7 +20,7 @@ class ScheduleRepository {
                 pageSize = 20,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { PagingSource(allEvents) }
+            pagingSourceFactory = { PagingSource(allEvents.sortedBy { it.date }) }
         )
     }
 

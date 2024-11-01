@@ -1,6 +1,7 @@
 package com.alexvolkov.dazntestapp.presentation.view
 
 import android.graphics.Color
+import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -26,35 +27,39 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import androidx.navigation.NavController
+import com.alexvolkov.dazntestapp.presentation.viemodel.VideoPlaybackViewModel
+import org.koin.androidx.compose.koinViewModel
 
-@OptIn(UnstableApi::class)
 @Composable
-fun VideoPlayer(videoUrl: String) {
+fun VideoPlayer(
+    viewModel: VideoPlaybackViewModel = koinViewModel(),
+    videoUrl: String,
+    navController: NavController
+) {
     val context = LocalContext.current
 
-    // State to track if the video is ready
-    var isVideoReady by remember { mutableStateOf(false) }
+    var isVideoReady by rememberSaveable { mutableStateOf(false) }
+    var isFinishing by remember { mutableStateOf(false) }
 
-    // Remember ExoPlayer instance
     val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
+        viewModel.exoPlayer ?: ExoPlayer.Builder(context).build().apply {
+            viewModel.exoPlayer = this
             setMediaItem(MediaItem.fromUri(videoUrl))
             prepare()
+            seekTo(viewModel.playbackPosition)
+            playWhenReady = viewModel.playWhenReady
         }
     }
 
     // Remember PlayerView instance
-    val playerView = remember {
+    val playerView = remember(exoPlayer) {
         PlayerView(context).apply {
             player = exoPlayer
-            // Optionally hide default controller
             useController = true // Set to false if you don't want default controls
-            // Set background color to transparent
-            setShutterBackgroundColor(Color.TRANSPARENT)
         }
     }
 
-    // Manage ExoPlayer lifecycle and listen for playback state changes
     DisposableEffect(exoPlayer) {
         val listener = object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -65,15 +70,22 @@ fun VideoPlayer(videoUrl: String) {
         }
 
         exoPlayer.addListener(listener)
-        exoPlayer.playWhenReady = true
 
         onDispose {
             exoPlayer.removeListener(listener)
-            exoPlayer.release()
+            // Save playback position and state
+            viewModel.playbackPosition = exoPlayer.currentPosition
+            viewModel.playWhenReady = exoPlayer.playWhenReady
+            // Do not release the ExoPlayer here; it is managed by the ViewModel
         }
     }
 
-    if (isVideoReady) {
+    BackHandler {
+        navController.popBackStack()
+        isFinishing = true
+    }
+
+    if (isVideoReady && isFinishing.not()) {
         AndroidView(
             modifier = Modifier
                 .fillMaxWidth()
@@ -81,7 +93,7 @@ fun VideoPlayer(videoUrl: String) {
                 .clip(RoundedCornerShape(8.dp)),
             factory = { playerView }
         )
-    } else {
+    } else if (isFinishing.not()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
