@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,15 +24,28 @@ import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.alexvolkov.dazntestapp.R
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 @Composable
-fun ShaderLoadingIndicator() {
+fun ShaderLoadingIndicator(
+    textColor: Color = MaterialTheme.colorScheme.onBackground,
+) {
     val shader = remember { RuntimeShader(shader) }
-    var time by remember { mutableFloatStateOf(Random.nextFloat()*100) }
+    var time by remember { mutableFloatStateOf(Random.nextFloat() * 100) }
+    var alpha by remember { mutableFloatStateOf(0f) }
+
+    val alphaAnim = animateFloatAsState(
+        targetValue = alpha, animationSpec = tween(
+            durationMillis = 1500, delayMillis = 300
+        )
+    )
+
+    shader.setFloatUniform("alpha", alphaAnim.value)
+
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
         ShaderBox(
             modifier = Modifier.size(200.dp),
@@ -45,12 +59,14 @@ fun ShaderLoadingIndicator() {
             )
         }
         Text(
-            text = "Loading...",
-            color = Color.White
+            text = "Loading",
+            color = textColor.copy(alpha = alphaAnim.value),
+            fontWeight = FontWeight.Bold
         )
     }
 
     LaunchedEffect(Unit) {
+        alpha = 1f
         while (true) {
             time += 2f
             delay(32)
@@ -63,12 +79,14 @@ fun DaznLogoLoadingIndicator(
     modifier: Modifier,
 ) {
     val shader = remember { RuntimeShader(logoShader) }
-    var time by remember { mutableFloatStateOf(Random.nextFloat()*100) }
+    var time by remember { mutableFloatStateOf(Random.nextFloat() * 100) }
     var intensity by remember { mutableFloatStateOf(0f) }
 
-    val intensityAnim = animateFloatAsState(targetValue = intensity, animationSpec = tween(
-        durationMillis = 3000,  delayMillis = 50
-    ))
+    val intensityAnim = animateFloatAsState(
+        targetValue = intensity, animationSpec = tween(
+            durationMillis = 3000, delayMillis = 50
+        )
+    )
 
     shader.setFloatUniform("intensity", intensityAnim.value)
 
@@ -103,7 +121,6 @@ private fun ShaderBox(
     content: @Composable () -> Unit = {}
 ) {
     shader.setFloatUniform("time", time)
-    shader.setFloatUniform("radius", 0.5f)
 
     Box(modifier = modifier
         .onSizeChanged { size ->
@@ -129,7 +146,7 @@ val shader = """
     uniform float time;
 
     //custom uniforms:
-    uniform float radius;
+    uniform float alpha;
     //end custom uniforms
 
 
@@ -175,7 +192,6 @@ val shader = """
     half4 main(float2 fragCoord) {
         vec2 uv = normalizeUv(fragCoord); // get normalized uv coordinates
 
-        uv /= 0.5+radius;
         float a = cos(atan(uv.y, uv.x));
         float am = abs(a-.5)/4.;
         float l = length(uv);
@@ -192,7 +208,7 @@ val shader = """
         float sh = smoothstep(0.15, .35, l);
 
         float m = m1*m1*m2 * ((s1*s2*s3) * (1.-l)) * sh;
-        vec4 col = vec4((0.5 + 0.5*cos(iTime+uv.xyx*3.+vec3(0,1,3))),m);
+        vec4 col = vec4((0.5 + 0.5*cos(iTime+uv.xyx*3.+vec3(0,1,3))),m)*(alpha);
 
         return mergeImageAndShader(fragCoord, col, vec4(image.eval(fragCoord)));
     }
@@ -204,10 +220,6 @@ val logoShader = """
     uniform shader image;
     uniform float time;
     uniform float intensity;
-
-    //custom uniforms:
-    uniform float radius;
-    //end custom uniforms
 
 
     //helper functions:
@@ -221,7 +233,10 @@ val logoShader = """
         vec2 uv = normalizeUv(fragCoord); // get normalized uv coordinates
         vec4 img = image.eval(fragCoord);
         vec3 gradient = 0.5 + 0.5 * sin(time + uv.xyx * 3.0 + vec3(1, 3, 5));  
+        if(uv.x < -.5 || uv.x > .5 || uv.y < -.5|| uv.y > 0.5) {
+           img.a=0.0;
+        }
               
-        return vec4(vec3(gradient)*img.a*intensity, img.a*intensity);
+       return vec4(vec3(gradient)*img.a*intensity+vec3(gradient)*intensity*0.05, img.a*intensity+0.05*intensity);
     }
 """.trimIndent()

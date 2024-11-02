@@ -1,6 +1,8 @@
 package com.alexvolkov.dazntestapp.presentation.view.screen
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -18,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -89,23 +92,31 @@ private fun VideoView(exoPlayer: MediaController) {
         }
     }
 
-    if (isVideoReady) {
-        AndroidView(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(8.dp)),
-            factory = { playerView }
-        )
-    } else {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(16f / 9f)
-                .background(androidx.compose.ui.graphics.Color.Black),
-            contentAlignment = Alignment.Center
-        ) {
-            ShaderLoadingIndicator()
+    Crossfade(isVideoReady, animationSpec = tween(1000)) {
+        when (it) {
+            true -> {
+                Box {
+                    AndroidView(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(16f / 9f)
+                            .clip(RoundedCornerShape(8.dp)),
+                        factory = { playerView }
+                    )
+                }
+            }
+
+            false -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(16f / 9f)
+                        .background(Color.Black),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ShaderLoadingIndicator(textColor = Color.White)
+                }
+            }
         }
     }
 }

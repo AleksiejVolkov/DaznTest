@@ -6,8 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
@@ -49,12 +53,13 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             val navController = rememberNavController()
             val currentBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute by remember {
                 derivedStateOf {
-                    currentBackStackEntry?.destination?.route ?: "Home"
+                    currentBackStackEntry?.destination?.route ?: ""
                 }
             }
 
@@ -65,7 +70,7 @@ class MainActivity : ComponentActivity() {
                             visible = currentRoute.contains(VideoScreen::class.qualifiedName.toString())
                                 .not(),
                             enter = fadeIn(),
-                            exit = fadeOut()
+                            exit = fadeOut(tween(delayMillis = 300))
                         ) {
                             BottomNavigationBar(
                                 navController = navController,
@@ -76,7 +81,8 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding()) {
                         val eventsListEventsViewModel = koinViewModel<EventsViewModel>()
                         val scheduleViewModel = koinViewModel<ScheduleViewModel>()
-                        NavHost(navController = navController, startDestination = EventsScreen) {
+                        NavHost(navController = navController,
+                            startDestination = EventsScreen) {
                             composable<EventsScreen> {
                                 EventsScreen(
                                     modifier = Modifier.fillMaxSize(),

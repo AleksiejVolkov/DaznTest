@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -161,7 +162,8 @@ fun ImageWithBlurredLabel(imageUrl: String, labelText: String) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp)
-                        .background(color = MaterialTheme.colorScheme.background),
+                        .background(color = MaterialTheme.colorScheme.background)
+                        .clipToBounds(),
                     contentAlignment = Alignment.Center
                 ) {
                     DaznLogoLoadingIndicator(modifier = Modifier.size(120.dp))
