@@ -164,7 +164,7 @@ fun ImageWithBlurredLabel(imageUrl: String, labelText: String) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .blur(6.dp),
+                    .blur(9.dp),
                 alignment = BottomCenter,
                 contentDescription = labelText, contentScale = ContentScale.FillWidth
             )
@@ -173,7 +173,7 @@ fun ImageWithBlurredLabel(imageUrl: String, labelText: String) {
                     .fillMaxWidth()
                     .height(50.dp)
                     .background(
-                        color = Color.Black.copy(0.3f)
+                        color = Color.Black.copy(0.4f)
                     )
                     .padding(8.dp),
                 contentAlignment = Alignment.CenterStart

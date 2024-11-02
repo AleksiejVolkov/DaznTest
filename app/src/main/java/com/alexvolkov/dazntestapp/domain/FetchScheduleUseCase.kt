@@ -9,8 +9,7 @@ class FetchScheduleUseCase(
     private val repository: ScheduleRepository
 ) {
 
-    suspend fun fetchSchedule(): Flow<PagingData<Event>> {
-        repository.fetchScheduleEvents()
+    fun fetchSchedule(): Flow<PagingData<Event>> {
         return repository.getScheduleStream()
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
@@ -38,6 +39,8 @@ import com.alexvolkov.dazntestapp.presentation.view.screen.ScheduleScreen
 import com.alexvolkov.dazntestapp.presentation.view.screen.VideoPlayer
 import com.alexvolkov.dazntestapp.service.MediaPlayerService
 import com.alexvolkov.dazntestapp.ui.theme.DaznTestAppTheme
+import com.alexvolkov.dazntestapp.util.CheckInternetConnection
+import com.alexvolkov.dazntestapp.util.Utils.isNetworkAvailable
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -48,7 +51,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-
             val currentBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute by remember {
                 derivedStateOf {

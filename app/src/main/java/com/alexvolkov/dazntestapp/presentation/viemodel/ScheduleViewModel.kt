@@ -22,7 +22,6 @@ class ScheduleViewModel(
 ) : ViewModel() {
 
     val scheduleEventsFlow: Flow<PagingData<EventItem>> = flow {
-        fetchScheduleUseCase.fetchSchedule()
         val pagingDataFlow = fetchScheduleUseCase.fetchSchedule()
             .map { pagingData ->
                 pagingData.map { event ->
@@ -38,8 +37,4 @@ class ScheduleViewModel(
             .cachedIn(viewModelScope)
         emitAll(pagingDataFlow)
     }.shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
-
-    init {
-        println("HUI init ScheduleViewModel")
-    }
 }

@@ -1,5 +1,19 @@
 package com.alexvolkov.dazntestapp.util
 
+import android.content.Context
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.alexvolkov.dazntestapp.receivers.NetworkStateReceiver
+import com.alexvolkov.dazntestapp.util.Utils.isNetworkAvailable
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -27,5 +41,34 @@ object Utils {
             3L -> "In three days"
             else -> DateTimeFormatter.ofPattern("dd.MM.yyyy").format(targetDate)
         }
+    }
+
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+}
+
+@Composable
+fun CheckInternetConnection(
+    onStateChanged: (Boolean) -> Unit
+) {
+    val context = LocalContext.current
+    var isConnected by remember { mutableStateOf(isNetworkAvailable(context)) }
+
+    DisposableEffect(Unit) {
+        val receiver = NetworkStateReceiver { isConnected = it }
+        val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        context.registerReceiver(receiver, filter)
+
+        onDispose {
+            context.unregisterReceiver(receiver)
+        }
+    }
+
+    LaunchedEffect(isConnected) {
+        onStateChanged(isConnected)
     }
 }

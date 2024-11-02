@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class FetchEventsUseCase(
     private val repository: EventsRepository
 ) {
-
-    suspend fun fetchEvents(): Flow<PagingData<Event>> {
-        repository.fetchAllEvents()
+    fun fetchEvents(): Flow<PagingData<Event>> {
         return repository.getEventsStream()
     }
 }
