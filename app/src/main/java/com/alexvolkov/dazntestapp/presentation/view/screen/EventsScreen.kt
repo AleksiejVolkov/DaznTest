@@ -13,7 +13,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -26,6 +31,7 @@ import com.alexvolkov.dazntestapp.presentation.navigation.VideoScreen
 import com.alexvolkov.dazntestapp.presentation.viemodel.EventsViewModel
 import com.alexvolkov.dazntestapp.presentation.view.components.ShaderLoadingIndicator
 import com.alexvolkov.dazntestapp.presentation.view.components.VideoItemList
+import com.alexvolkov.dazntestapp.util.CheckInternetConnection
 
 @Composable
 fun EventsScreen(
@@ -38,6 +44,14 @@ fun EventsScreen(
 
     val isLoading = events.loadState.refresh is LoadState.Loading
     val isError = events.loadState.refresh is LoadState.Error
+    var hasConnection by remember { mutableStateOf(true) }
+
+    CheckInternetConnection {
+        hasConnection = it
+        if (hasConnection && isLoading.not() && events.itemCount == 0) {
+            events.refresh()
+        }
+    }
 
     val listState = rememberSaveable(vm, saver = LazyListState.Saver) {
         LazyListState()
@@ -54,7 +68,11 @@ fun EventsScreen(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "Error: ${error.localizedMessage}", textAlign = TextAlign.Center)
-                Button(onClick = { events.retry() }) {
+                Button(onClick = {
+                    if (hasConnection) {
+                        events.retry()
+                    }
+                }) {
                     Text(text = "Retry")
                 }
             }

@@ -44,7 +44,12 @@ fun ScheduleScreen(
     val isError = events.loadState.refresh is LoadState.Error && events.itemCount == 0
     var hasConnection by remember { mutableStateOf(true) }
 
-    CheckInternetConnection { hasConnection = it }
+    CheckInternetConnection {
+        hasConnection = it
+        if (hasConnection && isLoading.not() && events.itemCount == 0) {
+            events.refresh()
+        }
+    }
 
     val listState = rememberSaveable(vm, saver = LazyListState.Saver) {
         LazyListState()
@@ -69,7 +74,10 @@ fun ScheduleScreen(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "Error: ${error.localizedMessage}", textAlign = TextAlign.Center)
-                Button(onClick = { events.retry() }) {
+                Button(onClick = {
+                    if (hasConnection)
+                        events.retry()
+                }) {
                     Text(text = "Retry")
                 }
             }

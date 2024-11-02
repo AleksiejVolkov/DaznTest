@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -99,7 +100,7 @@ fun EventCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                    .padding(8.dp),
                 verticalAlignment = Alignment.Bottom
             ) {
                 Column {
@@ -121,9 +122,13 @@ fun EventCard(
                 if (event.videoUrl.isNotEmpty()) {
                     OutlinedButton(
                         onClick = { onOpenVideo(event.videoUrl) },
-                        shape = MaterialTheme.shapes.large
+                        shape = MaterialTheme.shapes.large,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                            backgroundColor = MaterialTheme.colorScheme.surface
+                        )
                     ) {
-                        Text(text = "Watch")
+                        Text(text = "Watch", style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }
