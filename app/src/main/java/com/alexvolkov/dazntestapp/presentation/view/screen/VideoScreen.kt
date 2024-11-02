@@ -1,13 +1,11 @@
-package com.alexvolkov.dazntestapp.presentation.view
+package com.alexvolkov.dazntestapp.presentation.view.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +26,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import com.alexvolkov.dazntestapp.presentation.viemodel.VideoPlaybackViewModel
+import com.alexvolkov.dazntestapp.presentation.view.components.ShaderLoadingIndicator
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -106,7 +105,7 @@ private fun VideoView(exoPlayer: MediaController) {
                 .background(androidx.compose.ui.graphics.Color.Black),
             contentAlignment = Alignment.Center
         ) {
-            LoadingVideoIndicator()
+            ShaderLoadingIndicator()
         }
     }
 }

@@ -1,11 +1,10 @@
-package com.alexvolkov.dazntestapp.presentation.view
+package com.alexvolkov.dazntestapp.presentation.view.components
 
 import android.graphics.RenderEffect
 import android.graphics.RuntimeShader
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,9 +23,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
-
 @Composable
-fun LoadingVideoIndicator() {
+fun ShaderLoadingIndicator() {
     val shader = remember { RuntimeShader(shader) }
     var time by remember { mutableFloatStateOf(Random.nextFloat()*100) }
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {

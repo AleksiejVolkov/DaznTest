@@ -1,17 +1,9 @@
-package com.alexvolkov.dazntestapp.presentation.view
+package com.alexvolkov.dazntestapp.presentation.view.components
 
-import android.graphics.RenderEffect
-import android.graphics.Shader
-import android.graphics.drawable.BitmapDrawable
-import android.media.Image
-import android.os.Build
-import android.widget.ImageView
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,9 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
@@ -31,93 +21,56 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
-import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import coil3.BitmapImage
 import coil3.ImageLoader
-import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter.State.Empty.painter
-import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.allowHardware
-import coil3.size.Size
 import com.alexvolkov.dazntestapp.presentation.data.EventItem
-import com.alexvolkov.dazntestapp.presentation.viemodel.EventsViewModel
 import com.alexvolkov.dazntestapp.util.Utils.formatDate
 
 @Composable
-fun EventsList(
+fun VideoItemList(
     modifier: Modifier = Modifier,
-    innerPaddings: PaddingValues,
-    eventsViewModel: EventsViewModel,
-    onOpenVideo: (String) -> Unit
+    lazyListState: LazyListState,
+    topOffset: Dp,
+    itemsData: LazyPagingItems<EventItem>,
+    onOpenVideo: (String) -> Unit = {}
 ) {
-    val events = eventsViewModel.eventsFlow.collectAsLazyPagingItems()
-
-    val listState = rememberSaveable(eventsViewModel, saver = LazyListState.Saver) {
-        LazyListState()
-    }
-
-    Box {
-        LazyColumn(
-            modifier = modifier.padding(horizontal = 8.dp), state = listState
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(innerPaddings.calculateTopPadding()))
-            }
-            items(count = events.itemCount,
-                key = events.itemKey { it.id },
-                contentType = events.itemContentType { "contentType" }) { index ->
-                events[index]?.let {
-                    EventCard(it) { videoUrl ->
-                        onOpenVideo(videoUrl)
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
+    LazyColumn(
+        modifier = modifier.padding(horizontal = 8.dp), state = lazyListState
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(topOffset))
+        }
+        items(count = itemsData.itemCount,
+            key = itemsData.itemKey { it.id },
+            contentType = itemsData.itemContentType { "contentType" }) { index ->
+            itemsData[index]?.let {
+                EventCard(it) { videoUrl ->
+                    onOpenVideo(videoUrl)
                 }
-            }
-            item {
-                Spacer(modifier = Modifier.height(80.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(innerPaddings.calculateTopPadding())
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
-                            MaterialTheme.colorScheme.background.copy(alpha = 0f)
-                        ),
-                    )
-                )
-        )
+        item {
+            Spacer(modifier = Modifier.height(80.dp))
+        }
     }
 }
 
@@ -234,10 +187,12 @@ fun ImageWithBlurredLabel(imageUrl: String, labelText: String) {
         }
     } else {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator()
+            ShaderLoadingIndicator()
         }
     }
 }

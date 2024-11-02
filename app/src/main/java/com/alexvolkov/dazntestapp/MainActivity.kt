@@ -14,14 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,14 +32,12 @@ import com.alexvolkov.dazntestapp.presentation.navigation.ScheduleScreen
 import com.alexvolkov.dazntestapp.presentation.navigation.VideoScreen
 import com.alexvolkov.dazntestapp.presentation.viemodel.EventsViewModel
 import com.alexvolkov.dazntestapp.presentation.viemodel.ScheduleViewModel
-import com.alexvolkov.dazntestapp.presentation.view.BottomNavigationBar
-import com.alexvolkov.dazntestapp.presentation.view.EventsList
-import com.alexvolkov.dazntestapp.presentation.view.ScheduleList
-import com.alexvolkov.dazntestapp.presentation.view.VideoPlayer
+import com.alexvolkov.dazntestapp.presentation.view.components.BottomNavigationBar
+import com.alexvolkov.dazntestapp.presentation.view.screen.EventsScreen
+import com.alexvolkov.dazntestapp.presentation.view.screen.ScheduleScreen
+import com.alexvolkov.dazntestapp.presentation.view.screen.VideoPlayer
 import com.alexvolkov.dazntestapp.service.MediaPlayerService
 import com.alexvolkov.dazntestapp.ui.theme.DaznTestAppTheme
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -83,17 +76,18 @@ class MainActivity : ComponentActivity() {
                         val scheduleViewModel = koinViewModel<ScheduleViewModel>()
                         NavHost(navController = navController, startDestination = EventsScreen) {
                             composable<EventsScreen> {
-                                EventsList(
+                                EventsScreen(
+                                    modifier = Modifier.fillMaxSize(),
                                     innerPaddings = innerPadding,
-                                    eventsViewModel = eventsListEventsViewModel
-                                ) {
-                                    navController.navigate(VideoScreen(it))
-                                }
+                                    vm = eventsListEventsViewModel,
+                                    navController = navController
+                                )
                             }
                             composable<ScheduleScreen> {
-                                ScheduleList(
+                                ScheduleScreen(
+                                    modifier = Modifier.fillMaxSize(),
                                     innerPaddings = innerPadding,
-                                    scheduleViewModel = scheduleViewModel
+                                    vm = scheduleViewModel
                                 )
                             }
                             composable<VideoScreen> { backStackEntry ->

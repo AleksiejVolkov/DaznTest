@@ -1,4 +1,4 @@
-package com.alexvolkov.dazntestapp.presentation.view
+package com.alexvolkov.dazntestapp.presentation.view.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
