@@ -1,5 +1,7 @@
 package com.alexvolkov.dazntestapp.presentation.view.components
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.Card
@@ -38,6 +41,7 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import coil3.BitmapImage
 import coil3.ImageLoader
+import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.allowHardware
@@ -141,58 +145,64 @@ fun ImageWithBlurredLabel(imageUrl: String, labelText: String) {
 
         val result = loader.execute(request)
         if (result is SuccessResult) {
-            val bitmap = (result.image as BitmapImage).bitmap
-            imageBitmap = bitmap.asImageBitmap()
+            imageBitmap = (result.image as BitmapImage).bitmap.asImageBitmap()
         }
     }
 
-    if (imageBitmap != null) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp),
-            contentAlignment = BottomCenter
-        ) {
-            Image(
-                bitmap = imageBitmap!!,
-                modifier = Modifier.fillMaxSize(),
-                alignment = BottomCenter,
-                contentDescription = labelText, contentScale = ContentScale.FillWidth
-            )
-            Image(
-                bitmap = imageBitmap!!,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .blur(9.dp),
-                alignment = BottomCenter,
-                contentDescription = labelText, contentScale = ContentScale.FillWidth
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .background(
-                        color = Color.Black.copy(0.4f)
-                    )
-                    .padding(8.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Text(
-                    text = labelText,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
+    Crossfade(imageBitmap, animationSpec = tween(1000)) { bitmap ->
+        when (bitmap) {
+            null -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .background(color = MaterialTheme.colorScheme.background),
+                    contentAlignment = Alignment.Center
+                ) {
+                    DaznLogoLoadingIndicator(modifier = Modifier.size(120.dp))
+                }
             }
-        }
-    } else {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            ShaderLoadingIndicator()
+
+            else -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp),
+                    contentAlignment = BottomCenter
+                ) {
+                    Image(
+                        bitmap = imageBitmap!!,
+                        modifier = Modifier.fillMaxSize(),
+                        alignment = BottomCenter,
+                        contentDescription = labelText, contentScale = ContentScale.FillWidth
+                    )
+                    Image(
+                        bitmap = imageBitmap!!,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .blur(9.dp),
+                        alignment = BottomCenter,
+                        contentDescription = labelText, contentScale = ContentScale.FillWidth
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .background(
+                                color = Color.Black.copy(0.4f)
+                            )
+                            .padding(8.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            text = labelText,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+            }
         }
     }
 }

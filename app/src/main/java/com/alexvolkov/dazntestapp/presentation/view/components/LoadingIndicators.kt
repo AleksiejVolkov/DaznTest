@@ -2,6 +2,9 @@ package com.alexvolkov.dazntestapp.presentation.view.components
 
 import android.graphics.RenderEffect
 import android.graphics.RuntimeShader
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.alexvolkov.dazntestapp.R
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -32,7 +37,13 @@ fun ShaderLoadingIndicator() {
             modifier = Modifier.size(200.dp),
             shader = shader,
             time = time
-        )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black)
+            )
+        }
         Text(
             text = "Loading...",
             color = Color.White
@@ -48,10 +59,48 @@ fun ShaderLoadingIndicator() {
 }
 
 @Composable
-fun ShaderBox(
+fun DaznLogoLoadingIndicator(
+    modifier: Modifier,
+) {
+    val shader = remember { RuntimeShader(logoShader) }
+    var time by remember { mutableFloatStateOf(Random.nextFloat()*100) }
+    var intensity by remember { mutableFloatStateOf(0f) }
+
+    val intensityAnim = animateFloatAsState(targetValue = intensity, animationSpec = tween(
+        durationMillis = 3000,  delayMillis = 50
+    ))
+
+    shader.setFloatUniform("intensity", intensityAnim.value)
+
+    Box(contentAlignment = Alignment.Center, modifier = modifier) {
+        ShaderBox(
+            modifier = Modifier.size(200.dp),
+            shader = shader,
+            time = time
+        ) {
+            Image(
+                modifier = Modifier.fillMaxSize(),
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = null
+            )
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        intensity = 1f
+        while (true) {
+            time += 0.05f
+            delay(32)
+        }
+    }
+}
+
+@Composable
+private fun ShaderBox(
     modifier: Modifier,
     shader: RuntimeShader,
-    time: Float
+    time: Float,
+    content: @Composable () -> Unit = {}
 ) {
     shader.setFloatUniform("time", time)
     shader.setFloatUniform("radius", 0.5f)
@@ -69,14 +118,9 @@ fun ShaderBox(
                 )
                 .asComposeRenderEffect()
         }) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color.Black)
-        )
+        content()
     }
 }
-
 
 val shader = """
     //necessary for the shader to work:
@@ -151,5 +195,33 @@ val shader = """
         vec4 col = vec4((0.5 + 0.5*cos(iTime+uv.xyx*3.+vec3(0,1,3))),m);
 
         return mergeImageAndShader(fragCoord, col, vec4(image.eval(fragCoord)));
+    }
+""".trimIndent()
+
+val logoShader = """
+    //necessary for the shader to work:
+    uniform float2 resolution;
+    uniform shader image;
+    uniform float time;
+    uniform float intensity;
+
+    //custom uniforms:
+    uniform float radius;
+    //end custom uniforms
+
+
+    //helper functions:
+    vec2 normalizeUv(float2 fragCoord) {
+        vec2 uv = fragCoord/resolution.xy - .5;
+        return vec2(uv.x * resolution.x/resolution.y, uv.y);
+    }
+
+
+    half4 main(float2 fragCoord) {
+        vec2 uv = normalizeUv(fragCoord); // get normalized uv coordinates
+        vec4 img = image.eval(fragCoord);
+        vec3 gradient = 0.5 + 0.5 * sin(time + uv.xyx * 3.0 + vec3(1, 3, 5));  
+              
+        return vec4(vec3(gradient)*img.a*intensity, img.a*intensity);
     }
 """.trimIndent()
