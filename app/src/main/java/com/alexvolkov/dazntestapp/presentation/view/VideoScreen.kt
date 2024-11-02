@@ -28,7 +28,6 @@ import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import com.alexvolkov.dazntestapp.presentation.viemodel.VideoPlaybackViewModel
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.context.GlobalContext
 
 @Composable
 fun VideoPlayer(
@@ -58,12 +57,12 @@ fun VideoPlayer(
     }
 
     if (viewState.value.ready && !isFinishing) {
-        VideoView(viewModel.getMediaController()!!, viewModel)
+        VideoView(viewModel.getMediaController()!!)
     }
 }
 
 @Composable
-private fun VideoView(exoPlayer: MediaController, viewModel: VideoPlaybackViewModel) {
+private fun VideoView(exoPlayer: MediaController) {
     val context = LocalContext.current
     var isVideoReady by rememberSaveable { mutableStateOf(false) }
 
